@@ -1,51 +1,59 @@
-from django.shortcuts import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from django.shortcuts import render, HttpResponse
+
+# Create your views here.
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
 from blog_2.models import Post
 from blog_2.serializers import PostSerializer
 
 
-# Create your views here.
 def index(request):
-    return HttpResponse("Hello, world. You're at the blog_2 index.")
-
+    return HttpResponse("Hello world")
 
 @api_view(['GET', 'POST'])
 def post_list(request):
-    # get all the posts
     if request.method == 'GET':
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
-        return HttpResponse(serializer.data)
+        return Response(serializer.data)
     if request.method == 'POST':
         data = request.data
         print(data)
         serializer = PostSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return HttpResponse(serializer.data, safe=201)
-        return HttpResponse(serializer.errors, safe=400)
-
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def post_detail(request, id):
     try:
         post = Post.objects.get(id=id)
-    except Post.DoesNotExist:
-        return HttpResponse(status=404)
+    except ObjectDoesNotExist:
+        return Response(status=404)
 
-    if request.method == 'GET':
+    if request.method == "GET":
+        """get the post with its id"""
         serializer = PostSerializer(instance=post)
+        print(serializer.data)
         return Response(serializer.data)
 
-    elif request.method == 'PUT':
+    elif request.method == "PUT":
+        """update the post with its id"""
         serializer = PostSerializer(instance=post, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+        return Response(serializer.errors)
 
-    elif request.method == 'DELETE':
+    elif request.method == "DELETE":
+        """"delete the post with its id"""
         post.delete()
-        return Response("Deleted successfully")
+        return Response("Deleted")
+
+

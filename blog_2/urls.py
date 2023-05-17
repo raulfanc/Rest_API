@@ -22,10 +22,10 @@ from blog_2.views import index, post_list, post_detail
 from blog_2.viewsets import PostViewSet
 
 router = DefaultRouter()
-router.register("post", PostViewSet)
+router.register("posts", PostViewSet)
 urlpatterns = [
     path("home/", index),
-    path("post/", post_list),
-    path("post_detail/<int:id>/", post_detail),
-    path("", include(router.urls)),
+    path('post/', post_list),
+    path('post_detail/<int:id>/', post_detail),
+    path("", include(router.urls))
 ]

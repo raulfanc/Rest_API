@@ -12,8 +12,14 @@ from blog_2.models import Post
 from blog_2.serializers import PostSerializer
 
 
+@api_view(['GET'])
 def index(request):
-    return HttpResponse("Hello world")
+    # if request.user.is_authenticated:
+    posts = Post.objects.all()
+    serializer = PostSerializer(posts, many=True)
+    return HttpResponse(serializer.data)
+    # return HttpResponse("Hello, Anonymous User")
+
 
 @api_view(['GET', 'POST'])
 def post_list(request):
@@ -29,6 +35,7 @@ def post_list(request):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def post_detail(request, id):
@@ -55,5 +62,3 @@ def post_detail(request, id):
         """"delete the post with its id"""
         post.delete()
         return Response("Deleted")
-
-

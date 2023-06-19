@@ -9,7 +9,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
 from blog_2.models import Post
-from blog_2.serializers import PostSerializer
+from blog_2.serializers import PostSerializer, UserSerializer
 
 
 @api_view(['GET'])
@@ -62,3 +62,11 @@ def post_detail(request, id):
         """"delete the post with its id"""
         post.delete()
         return Response("Deleted")
+
+
+@api_view(['GET'])
+def get_user_id(request):
+    try:
+        return Response(request.user.id)
+    except:
+        return Response(status=404)
